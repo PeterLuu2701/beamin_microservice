@@ -177,6 +177,82 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get All Restaurant Menu",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/gateway/get-all-restaurant-menu",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gateway",
+						"get-all-restaurant-menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Restaurant Menu By Restaurant Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/gateway/get-restaurant-menu-by-restaurant-id/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gateway",
+						"get-restaurant-menu-by-restaurant-id",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"request": {
+				"auth": {
+					"type": "bearer"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"restaurantId\": 1,\r\n    \"restaurantFoodId\": 1,\r\n    \"quantity\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/gateway/create-order?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhbGljZSIsImlhdCI6MTczMDA3MjQwNSwiZXhwIjoxNzMwMDc2MDA1fQ.Qd8DoYz0PKh_H84FP0V8Of8CsmmkkH6cSmDPxbyTNzE",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"gateway",
+						"create-order"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJhbGljZSIsImlhdCI6MTczMDA3MjQwNSwiZXhwIjoxNzMwMDc2MDA1fQ.Qd8DoYz0PKh_H84FP0V8Of8CsmmkkH6cSmDPxbyTNzE"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

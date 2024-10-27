@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model app_menu {
+  id        Int         @id @default(autoincrement())
+  menu_type String      @db.VarChar(100)
+  food_card food_card[]
+}
+
+model food_card {
+  id                 Int             @id @default(autoincrement())
+  food_name          String          @db.VarChar(100)
+  restaurant_food_id Int
+  restaurant_id      Int
+  restaurant_name    String          @db.VarChar(100)
+  restaurant_address String          @db.VarChar(100)
+  app_menu_id        Int
+  price              Decimal?        @db.Decimal(10, 2)
+  img                String?         @db.VarChar(255)
+  app_menu           app_menu        @relation(fields: [app_menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_app_menu")
+  restaurant_food    restaurant_food @relation(fields: [restaurant_food_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurant         restaurant      @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model orders {
+  id                 Int             @id @default(autoincrement())
+  food_name          String          @db.VarChar(100)
+  restaurant_name    String          @db.VarChar(100)
+  price              Decimal         @db.Decimal(10, 2)
+  quantity           Int
+  total              Decimal         @db.Decimal(10, 2)
+  restaurant_id      Int
+  restaurant_food_id Int
+  user_id            Int
+  delivery_status    String?         @default("pending") @db.VarChar(50)
+  restaurant_food    restaurant_food @relation(fields: [restaurant_food_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurant         restaurant      @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users              users           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model restaurant {
+  id                 Int               @id @default(autoincrement())
+  restaurant_name    String            @db.VarChar(100)
+  restaurant_address String
+  open_time          DateTime          @db.Time(6)
+  close_time         DateTime          @db.Time(6)
+  min_price          Decimal           @db.Decimal(10, 2)
+  max_price          Decimal           @db.Decimal(10, 2)
+  food_card          food_card[]
+  orders             orders[]
+  restaurant_food    restaurant_food[]
+  restaurant_menu    restaurant_menu[]
+}
+
+model restaurant_food {
+  id                 Int             @id @default(autoincrement())
+  food_name          String          @db.VarChar(100)
+  ingredient         String          @db.VarChar(100)
+  price              Decimal         @db.Decimal(10, 2)
+  restaurant_id      Int
+  restaurant_menu_id Int
+  img                String?         @db.VarChar(512)
+  inventory          Int?            @default(10)
+  food_card          food_card[]
+  orders             orders[]
+  restaurant         restaurant      @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurant_menu    restaurant_menu @relation(fields: [restaurant_menu_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model restaurant_menu {
+  id              Int               @id @default(autoincrement())
+  course_name     String            @db.VarChar(100)
+  restaurant_id   Int
+  restaurant_food restaurant_food[]
+  restaurant      restaurant        @relation(fields: [restaurant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id        Int      @id @default(autoincrement())
+  user_name String   @db.VarChar(100)
+  password  String   @db.VarChar(255)
+  orders    orders[]
+}

@@ -93,6 +93,34 @@ import { JwtModule } from '@nestjs/jwt';
       },
     ]),
 
+    ClientsModule.register([
+      {
+        name: 'RESTAURANT_MENU_NAME',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://admin:1234@localhost:5672'],
+          queue: 'restaurant_menu_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+
+    ClientsModule.register([
+      {
+        name: 'ORDER_NAME',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://admin:1234@localhost:5672'],
+          queue: 'order_queue',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
+
   ],
   controllers: [GatewayController],
   providers: [],

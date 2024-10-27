@@ -21,6 +21,8 @@ export class GatewayController {
     @Inject('FOOD_CARD_NAME') private foodCardService: ClientProxy,
     @Inject('RESTAURANT_NAME') private restaurantService: ClientProxy,
     @Inject('RESTAURANT_FOOD_NAME') private restaurantFoodService: ClientProxy,
+    @Inject('RESTAURANT_MENU_NAME') private restaurantMenuService: ClientProxy,
+    @Inject('ORDER_NAME') private orderService: ClientProxy,
   ) {}
 
   @Get('/get-all-user')
@@ -190,5 +192,72 @@ export class GatewayController {
 
     console.log('Search Results:', searchResults);
     return searchResults;
+  }
+
+  @Get('/get-all-restaurant-menu')
+  async getAllRestaurantMenu() {
+    let listRestaurantMenu = await lastValueFrom(
+      this.restaurantMenuService.send('get-all-restaurant-menu', '').pipe(
+        timeout(5000),
+        retry(5),
+        catchError((err) => {
+          return of({
+            err,
+          });
+        }),
+      ),
+    );
+    console.log(listRestaurantMenu);
+
+    return listRestaurantMenu;
+  }
+
+  @Get('/get-restaurant-menu-by-restaurant-id/:id')
+  async findRestaurantMenuByRestaurantId(@Param('id') id: number) {
+    const data = { id };
+
+    let searchResults = await lastValueFrom(
+      this.restaurantMenuService.send('get-restaurant-menu-by-restaurant-id', data).pipe(
+        timeout(5000),
+        retry(3),
+        catchError((err) => {
+          return of({ err });
+        }),
+      ),
+    );
+
+    console.log('Search Results:', searchResults);
+    return searchResults;
+  }
+
+  @Post('/create-order')
+  async createOrder(
+    @Query('token') token: string,
+    @Body() body: { quantity: number; restaurantId: string; restaurantFoodId: string }
+  ) {
+    try {
+      const { quantity, restaurantId, restaurantFoodId } = body;
+
+      // Forward request to order microservice
+      const response = await lastValueFrom(
+        this.orderService.send('create-order', { token, quantity, restaurantId, restaurantFoodId }).pipe(
+          catchError((err) => {
+            return of({
+              error: err.message,
+              message: 'Unable to create order',
+            });
+          })
+        )
+      );
+
+      // Check for errors in the response
+      if (response?.error) {
+        throw new UnauthorizedException(response.message || 'Order creation failed');
+      }
+
+      return response;
+    } catch (error) {
+      throw new UnauthorizedException('Order creation failed');
+    }
   }
 }
