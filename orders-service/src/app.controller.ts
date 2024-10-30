@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, Query, UnauthorizedException } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, UnauthorizedException, Body, Headers } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  
+
   @MessagePattern('create-order')
   async createOrder(
-    @Query('token') token: string,
+    @Headers('Authorization') token: string,
     @Body() body: { quantity: number; restaurantId: string; restaurantFoodId: string },
   ) {
     try {
@@ -18,6 +18,4 @@ export class AppController {
       throw new UnauthorizedException('Invalid token or order creation failed');
     }
   }
-
-  
 }
